@@ -65,12 +65,15 @@ function DungeonScanbotMarkI:OnDocLoaded()
 		-- e.g. Apollo.RegisterEventHandler("KeyDown", "OnKeyDown", self)
 		Apollo.RegisterSlashCommand("ds", "OnDungeonScanbotMarkIOn", self)
 
-		self.timer = ApolloTimer.Create(1.0, true, "OnTimer", self)
+		self.timer = ApolloTimer.Create(0.1, true, "OnTimer", self)
 
 		self.skillAlert = Apollo.LoadForm(self.xmlDoc, "SkillAlert", nil, self)
 		self.skillAlert:Show(false)
-		self.skillAlertTimer = 5
+		self.skillAlertTimer = 50
 
+		local displaySize = Apollo.GetDisplaySize()
+		self.skillAlert:Move((displaySize["nWidth"] / 2) - 360, 150, self.skillAlert:GetWidth(), self.skillAlert:GetHeight())
+		
 		self.xmlDoc = nil
 	end
 end
@@ -87,21 +90,26 @@ end
 
 -- control SkillAlert frame
 function DungeonScanbotMarkI:SkillAlertTimeout()
-	if self.skillAlert:IsShown() then
-		if self.skillAlertTimer < 1 then
-			self.skillAlert:Show(false)
-			self.skillAlertTimer = 5
-		else
-			self.skillAlertTimer = self.skillAlertTimer - 1
-		end
+	if not self.skillAlert:IsShown() then
+		return
+	end
+	
+	if self.skillAlertTimer < 1 then
+		self.skillAlert:Show(false)
+		self.skillAlertTimer = 50
+	else
+		self.skillAlertTimer = self.skillAlertTimer - 1
 	end
 end
 
 -- check Boss events
 function DungeonScanbotMarkI:CheckBossEvents()
 	local unitPlayer = GameLib.GetPlayerUnit()
+	if not unitPlayer then
+		return
+	end
+
 	local unitTarget = unitPlayer:GetTarget()
-	
 	if not unitTarget then
 		return
 	end
@@ -135,6 +143,12 @@ end
 
 function DungeonScanbotMarkI:TestSkillAlert( wndHandler, wndControl, eMouseButton )
 	self.skillAlert:Show(true)
+
+	Print(self.skillAlert:GetPos())
+	
+	for k, v in pairs(Apollo.GetDisplaySize()) do
+		Print('[' .. k .. '] = ' .. v)
+	end
 end
 
 
