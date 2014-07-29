@@ -115,8 +115,11 @@ function DungeonScanbotMarkI:CheckBossEvents()
 	end
 	
 	if unitTarget:ShouldShowCastBar() then
-		self.skillAlert:FindChild("Alert"):SetText(string.format("%s is casting %s", unitTarget:GetName(), unitTarget:GetCastName()))
-		self.skillAlert:Show(true)
+		if not self.skillAlert:IsShown() then
+			Sound.Play(Sound.PlayUIStoryPanelUrgent)
+			self.skillAlert:FindChild("Alert"):SetText(string.format("%s is casting %s", unitTarget:GetName(), unitTarget:GetCastName()))
+			self.skillAlert:Show(true)
+		end
 	end
 end
 
